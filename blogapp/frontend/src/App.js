@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -10,12 +12,12 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [errorType, setErrorType] = useState('')
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -44,12 +46,12 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('wrong username or password')
-      setErrorType('error')
-      setTimeout(() => {
-        setErrorMessage(null)
-        setErrorType('')
-      }, 3000)
+      dispatch(
+        setNotification(
+          { message: 'wrong username or password', type: 'alert' },
+          3
+        )
+      )
     }
   }
 
@@ -59,14 +61,15 @@ const App = () => {
       setBlogs(blogs.concat(returnedBlog))
     })
 
-    setErrorMessage(
-      `a new blog ${blogObject.title} by ${blogObject.author} added`
+    dispatch(
+      setNotification(
+        {
+          message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+          type: 'info',
+        },
+        3
+      )
     )
-    setErrorType('notification')
-    setTimeout(() => {
-      setErrorMessage(null)
-      setErrorType('')
-    }, 3000)
   }
 
   const logOut = () => {
@@ -105,7 +108,7 @@ const App = () => {
       {user === null ? (
         <div>
           <h2>log in to application</h2>
-          <Notification message={errorMessage} type={errorType} />
+          <Notification />
           <LoginForm
             username={username}
             password={password}
@@ -117,7 +120,7 @@ const App = () => {
       ) : (
         <div>
           <h2>blogs</h2>
-          <Notification message={errorMessage} type={errorType} />
+          <Notification />
           <p>
             {user.name} logged in <button onClick={logOut}>logout</button>
           </p>

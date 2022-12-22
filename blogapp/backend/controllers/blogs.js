@@ -30,7 +30,6 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     user: { _id: user._id, username: user.username, name: user.name },
     id: result._doc._id,
   }
-  console.log(updatedBlogWithUser)
   response.status(201).json(updatedBlogWithUser)
 })
 
