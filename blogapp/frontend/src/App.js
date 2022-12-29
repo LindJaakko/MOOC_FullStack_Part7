@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -13,15 +14,14 @@ import loginService from './services/login'
 
 const App = () => {
   const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
-  const [blogs, setBlogs] = useState([])
+  const blogs = useSelector((state) => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -57,10 +57,7 @@ const App = () => {
 
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
-    blogService.create(blogObject).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog))
-    })
-
+    dispatch(createBlog(blogObject))
     dispatch(
       setNotification(
         {
@@ -81,10 +78,13 @@ const App = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1 }
     const { id } = blog
     try {
+      console.log(updatedBlog, id)
+      /*
       const returnedBlog = await blogService.update(blog.id, updatedBlog)
       setBlogs((currentBlogs) =>
         currentBlogs.map((blog) => (blog.id === id ? returnedBlog : blog))
       )
+      */
     } catch {
       console.log('error')
     }
