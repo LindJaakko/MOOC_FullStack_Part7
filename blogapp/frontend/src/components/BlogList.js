@@ -1,19 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { toggleImportanceOf } from '../reducers/noteReducer'
 import Blog from './Blog'
 
-const Note = ({ note, handleClick }) => {
-  return (
-    <li onClick={handleClick}>
-      {note.content}
-      <strong> {note.important ? 'important' : ''}</strong>
-    </li>
-  )
-}
-
-const Notes = () => {
+const Blogs = () => {
   const dispatch = useDispatch()
-  const notes = useSelector(({ filter, notes }) => {
+  const blogs = useSelector(({ filter, notes }) => {
     if (filter === 'ALL') {
       return notes
     }
@@ -24,10 +14,10 @@ const Notes = () => {
 
   return (
     <ul>
-      {notes.map((note) => (
-        <Note
-          key={note.id}
-          note={note}
+      {blogs.map((blog) => (
+        <Blog
+          key={blog.id}
+          blog={blog}
           handleClick={() => dispatch(toggleImportanceOf(note.id))}
         />
       ))}

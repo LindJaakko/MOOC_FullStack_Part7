@@ -27,17 +27,17 @@ export const createBlog = (content) => {
     dispatch(appendBlog(newBlog))
   }
 }
-/*
+
 export const voteBlog = (blog) => {
   const changedBlog = {
     ...blog,
-    votes: blog.votes + 1,
+    likes: blog.likes + 1,
   }
   return async (dispatch) => {
-    await blogService.update(changedBlog)
+    await blogService.update(blog.id, changedBlog)
     dispatch(initializeBlogs())
   }
 }
-*/
+
 export const { appendBlog, setBlogs } = blogSlice.actions
 export default blogSlice.reducer

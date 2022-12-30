@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog } from './reducers/blogReducer'
+import { initializeBlogs, createBlog, voteBlog } from './reducers/blogReducer'
+import { initializeUser, removeUser } from './reducers/userReducer'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -13,24 +14,26 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+
   const dispatch = useDispatch()
+
   useEffect(() => {
     dispatch(initializeBlogs())
   }, [dispatch])
-
-  const blogs = useSelector((state) => state.blogs)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
       blogService.setToken(user.token)
+      dispatch(initializeUser(user))
     }
-  }, [])
+  }, [dispatch])
+
+  const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -40,8 +43,7 @@ const App = () => {
         username,
         password,
       })
-      setUser(user)
-      blogService.setToken(user.token)
+      dispatch(initializeUser(user))
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       setUsername('')
       setPassword('')
@@ -71,20 +73,12 @@ const App = () => {
 
   const logOut = () => {
     window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
+    dispatch(removeUser())
   }
 
   const onLike = async (blog) => {
-    const updatedBlog = { ...blog, likes: blog.likes + 1 }
-    const { id } = blog
     try {
-      console.log(updatedBlog, id)
-      /*
-      const returnedBlog = await blogService.update(blog.id, updatedBlog)
-      setBlogs((currentBlogs) =>
-        currentBlogs.map((blog) => (blog.id === id ? returnedBlog : blog))
-      )
-      */
+      dispatch(voteBlog(blog))
     } catch {
       console.log('error')
     }
