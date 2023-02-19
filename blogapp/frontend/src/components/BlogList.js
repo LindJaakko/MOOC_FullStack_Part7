@@ -25,4 +25,4 @@ const Blogs = () => {
   )
 }
 
-export default Notes
+export default Blogs

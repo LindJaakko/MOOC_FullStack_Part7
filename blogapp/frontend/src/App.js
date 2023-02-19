@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, voteBlog } from './reducers/blogReducer'
 import { initializeUser, removeUser } from './reducers/userReducer'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
+import Menu from './components/Menu'
+import Users from './views/Users'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -113,25 +116,39 @@ const App = () => {
         </div>
       ) : (
         <div>
-          <h2>blogs</h2>
-          <Notification />
-          <p>
-            {user.name} logged in <button onClick={logOut}>logout</button>
-          </p>
-          <Togglable buttonLabel='new blog' ref={blogFormRef}>
-            <BlogForm createBlog={addBlog} />
-          </Togglable>
-          {[...blogs]
-            .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                username={user.username}
-                onLike={() => onLike(blog)}
-                onRemove={() => onRemove(blog)}
+          <Router>
+            <Notification />
+            <div>
+              <Menu />
+              {user.name} logged in <button onClick={logOut}>logout</button>
+            </div>
+            <h2>blog app</h2>
+            <Routes>
+              <Route
+                path='/'
+                element={
+                  <Togglable buttonLabel='new blog' ref={blogFormRef}>
+                    <BlogForm createBlog={addBlog} />
+                  </Togglable>
+                }
               />
-            ))}
+              <Route
+                path='/'
+                element={[...blogs]
+                  .sort((a, b) => b.likes - a.likes)
+                  .map((blog) => (
+                    <Blog
+                      key={blog.id}
+                      blog={blog}
+                      username={user.username}
+                      onLike={() => onLike(blog)}
+                      onRemove={() => onRemove(blog)}
+                    />
+                  ))}
+              />
+              <Route path='/users' element={<Users />} />
+            </Routes>
+          </Router>
         </div>
       )}
     </div>
