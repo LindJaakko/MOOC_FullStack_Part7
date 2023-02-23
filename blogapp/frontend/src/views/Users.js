@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react'
-import userService from '../services/users'
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { initializeUsers } from '../reducers/usersReducer'
 
 const Users = () => {
-  const [users, setUsers] = useState([])
-  const sortedUsers = [...users].sort((a, b) => b.blogs.length - a.blogs.length)
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    const fetchData = async () => {
-      const users = await userService.getAll()
-      setUsers(users)
-    }
-    fetchData()
-  }, [])
+    dispatch(initializeUsers())
+  }, [dispatch])
+
+  const users = useSelector((state) => state.users)
+  const sortedUsers = [...users].sort((a, b) => b.blogs.length - a.blogs.length)
 
   return (
     <div>
@@ -22,10 +22,12 @@ const Users = () => {
             <th></th>
             <th>blogs created</th>
           </tr>
-          {sortedUsers.map((a) => (
-            <tr key={a.name}>
-              <td>{a.name}</td>
-              <td>{a.blogs.length}</td>
+          {sortedUsers.map((user) => (
+            <tr key={user.name}>
+              <td>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </td>
+              <td>{user.blogs.length}</td>
             </tr>
           ))}
         </tbody>

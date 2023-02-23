@@ -12,6 +12,7 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import Menu from './components/Menu'
 import Users from './views/Users'
+import User from './components/User'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -37,6 +38,7 @@ const App = () => {
 
   const blogs = useSelector((state) => state.blogs)
   const user = useSelector((state) => state.user)
+  const users = useSelector((state) => state.users)
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -147,6 +149,7 @@ const App = () => {
                   ))}
               />
               <Route path='/users' element={<Users />} />
+              <Route path='/users/:id' element={<User users={users} />} />
             </Routes>
           </Router>
         </div>
