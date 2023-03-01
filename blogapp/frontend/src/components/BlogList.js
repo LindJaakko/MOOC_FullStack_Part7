@@ -1,28 +1,27 @@
-import { useDispatch, useSelector } from 'react-redux'
-import Blog from './Blog'
+import { Link } from 'react-router-dom'
 
-const Blogs = () => {
-  const dispatch = useDispatch()
-  const blogs = useSelector(({ filter, notes }) => {
-    if (filter === 'ALL') {
-      return notes
-    }
-    return filter === 'IMPORTANT'
-      ? notes.filter((note) => note.important)
-      : notes.filter((note) => !note.important)
-  })
+const BlogList = ({ blogs }) => {
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5,
+  }
 
   return (
-    <ul>
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleClick={() => dispatch(toggleImportanceOf(note.id))}
-        />
-      ))}
-    </ul>
+    <div>
+      {[...blogs]
+        .sort((a, b) => b.likes - a.likes)
+        .map((blog) => (
+          <div key={blog.id} style={blogStyle} className='blog'>
+            <Link
+              to={`/blogs/${blog.id}`}
+            >{`${blog.title} ${blog.author}`}</Link>
+          </div>
+        ))}
+    </div>
   )
 }
 
-export default Blogs
+export default BlogList

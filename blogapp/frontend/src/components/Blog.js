@@ -1,58 +1,40 @@
-import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { useParams } from 'react-router-dom'
+import { voteBlog } from '../reducers/blogReducer'
 
-const Blog = ({ blog, username, onLike, onRemove }) => {
-  const [visible, setVisible] = useState(false)
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
+const Blog = ({ blogs }) => {
+  const dispatch = useDispatch()
+
+  const id = useParams().id
+  const blog = blogs.find((n) => n.id === id)
+
+  if (!blog) {
+    return null
   }
 
-  const toggleVisibility = () => {
-    setVisible(!visible)
-  }
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
-
-  const showWhenSameUser = {
-    display: username === blog.user.username ? '' : 'none',
+  const onLike = async () => {
+    try {
+      dispatch(voteBlog(blog))
+    } catch {
+      console.log('error')
+    }
   }
 
   return (
-    <div style={blogStyle} className='blog'>
-      <div style={hideWhenVisible}>
+    <div>
+      <h1>
         {blog.title} {blog.author}
-        <button onClick={toggleVisibility}>view</button>
-      </div>
-      <div style={showWhenVisible}>
-        {blog.title} {blog.author}
-        <button onClick={toggleVisibility}>hide</button>
-        <br></br>
-        {blog.url}
-        <br></br>
-        {blog.likes}
-        <button onClick={onLike}>like</button>
-        <br></br>
-        {blog?.user?.name}
-        <div style={showWhenSameUser}>
-          <button name='remove' onClick={onRemove}>
-            remove
-          </button>
-          <br></br>
+      </h1>
+      <div>
+        <a href='url'>{blog.url}</a>
+        <div>
+          {blog.likes} likes
+          <button onClick={onLike}>like</button>
+          <p>{`added by ${blog.user.name}`}</p>
         </div>
       </div>
     </div>
   )
-}
-
-Blog.propTypes = {
-  onLike: PropTypes.func.isRequired,
-  onRemove: PropTypes.func.isRequired,
-  blog: PropTypes.object.isRequired,
-  username: PropTypes.string.isRequired,
 }
 
 export default Blog

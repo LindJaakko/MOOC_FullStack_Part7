@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog, voteBlog } from './reducers/blogReducer'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
 import { initializeUser, removeUser } from './reducers/userReducer'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
+import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import Menu from './components/Menu'
@@ -81,25 +82,6 @@ const App = () => {
     dispatch(removeUser())
   }
 
-  const onLike = async (blog) => {
-    try {
-      dispatch(voteBlog(blog))
-    } catch {
-      console.log('error')
-    }
-  }
-
-  const onRemove = async (blog) => {
-    try {
-      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-        await blogService.remove(blog.id)
-        window.location.reload()
-      }
-    } catch {
-      console.log('error')
-    }
-  }
-
   const blogFormRef = useRef()
 
   return (
@@ -129,27 +111,17 @@ const App = () => {
               <Route
                 path='/'
                 element={
-                  <Togglable buttonLabel='new blog' ref={blogFormRef}>
-                    <BlogForm createBlog={addBlog} />
-                  </Togglable>
+                  <div>
+                    <Togglable buttonLabel='new blog' ref={blogFormRef}>
+                      <BlogForm createBlog={addBlog} />
+                    </Togglable>
+                    <BlogList blogs={blogs} />
+                  </div>
                 }
-              />
-              <Route
-                path='/'
-                element={[...blogs]
-                  .sort((a, b) => b.likes - a.likes)
-                  .map((blog) => (
-                    <Blog
-                      key={blog.id}
-                      blog={blog}
-                      username={user.username}
-                      onLike={() => onLike(blog)}
-                      onRemove={() => onRemove(blog)}
-                    />
-                  ))}
               />
               <Route path='/users' element={<Users />} />
               <Route path='/users/:id' element={<User users={users} />} />
+              <Route path='/blogs/:id' element={<Blog blogs={blogs} />} />
             </Routes>
           </Router>
         </div>
@@ -157,5 +129,4 @@ const App = () => {
     </div>
   )
 }
-
 export default App
