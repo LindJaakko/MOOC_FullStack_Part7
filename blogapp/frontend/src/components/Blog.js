@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { voteBlog } from '../reducers/blogReducer'
 import { getAll, create } from '../services/comments'
+import { Form, Button, Table } from 'react-bootstrap'
 
 const Blog = ({ blogs }) => {
   const [newComment, setnewComment] = useState('')
@@ -60,25 +61,25 @@ const Blog = ({ blogs }) => {
         <a href='url'>{blog.url}</a>
         <div>
           {blog.likes} likes
-          <button onClick={onLike}>like</button>
+          <Button onClick={onLike}>like</Button>
           <p>{`added by ${blog.user.name}`}</p>
         </div>
         <h2>comments</h2>
-        <form onSubmit={addComment}>
-          <div>
-            <input
+        <Form onSubmit={addComment}>
+          <Form.Group>
+            <Form.Control
               type='text'
               value={newComment}
               name='title'
               id='title'
               onChange={handleCommentChange}
             />
-            <button id='submit' type='submit'>
+            <Button id='submit' type='submit'>
               add comment
-            </button>
-          </div>
-        </form>
-        <table>
+            </Button>
+          </Form.Group>
+        </Form>
+        <Table bordered>
           <tbody>
             {comments.map((comment) => (
               <tr key={comment.id}>
@@ -86,7 +87,7 @@ const Blog = ({ blogs }) => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
     </div>
   )

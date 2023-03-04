@@ -4,6 +4,7 @@ import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog } from './reducers/blogReducer'
 import { initializeUser, removeUser } from './reducers/userReducer'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Button } from 'react-bootstrap'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -104,7 +105,7 @@ const App = () => {
             <Notification />
             <div>
               <Menu />
-              {user.name} logged in <button onClick={logOut}>logout</button>
+              {user.name} logged in <Button onClick={logOut}>logout</Button>
             </div>
             <h2>blog app</h2>
             <Routes>
