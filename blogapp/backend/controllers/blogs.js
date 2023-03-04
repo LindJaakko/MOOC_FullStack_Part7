@@ -1,5 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const Comment = require('../models/comment')
 const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
@@ -31,6 +32,33 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     id: result._doc._id,
   }
   response.status(201).json(updatedBlogWithUser)
+})
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const body = request.body
+  const comment = body.content
+  const blogId = request.params.id
+
+  const blog = await Blog.findById(request.params.id)
+
+  if (!blog) {
+    response.status(404).json({ error: 'Blog with the id does not exists' })
+  }
+
+  const newComment = new Comment({
+    content: comment,
+    blogId: blogId,
+  })
+
+  const result = await newComment.save()
+
+  response.status(201).json(result)
+})
+
+blogsRouter.get('/:id/comments', async (request, response) => {
+  const comments = await Comment.find({ blogId: request.params.id })
+
+  response.json(comments)
 })
 
 blogsRouter.delete(

@@ -85,7 +85,7 @@ const App = () => {
   const blogFormRef = useRef()
 
   return (
-    <div>
+    <div className='container'>
       {user === null ? (
         <div>
           <h2>log in to application</h2>
